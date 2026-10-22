@@ -4,6 +4,7 @@ import org.jetbrains.exposed.v1.core.Table
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.selectAll
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import org.jetbrains.exposed.v1.core.dao.id.IntIdTable
 import java.util.concurrent.CyclicBarrier
 import kotlin.concurrent.thread
 import kotlin.system.exitProcess
@@ -30,4 +31,12 @@ fun main(args: Array<String>) {
     stuck.forEach { println("${it.name} stuck at ${it.stackTrace.first()}") }
     println(if (stuck.isEmpty()) "ok" else "DEADLOCK")
     exitProcess(if (stuck.isEmpty()) 0 else 1)
+}
+
+object ItemTable : IntIdTable("item") {
+    val linkTokenId = optReference("link_token_id", LinkTokenTable)
+}
+
+object LinkTokenTable : IntIdTable("link_token") {
+    val itemId = optReference("item_id", ItemTable)
 }
